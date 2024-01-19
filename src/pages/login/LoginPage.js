@@ -3,12 +3,13 @@ import TextField from '@mui/material/TextField'
 // import InputLabel from '@mui/material/InputLabel'
 // import LoadingButton from '@mui/lab/LoadingButton';
 import { useState } from 'react';
-import { IconButton, InputAdornment } from '@mui/material';
+import { Alert, IconButton, InputAdornment } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Button from '@mui/material/Button'
 import { useNavigate } from 'react-router-dom';
-import { Email } from '@mui/icons-material';
+// import { Email } from '@mui/icons-material';
+import axios from 'axios'
 
 
 function LoginPage() {
@@ -33,22 +34,36 @@ function LoginPage() {
     }
 
     const navigate = useNavigate();
+    const [showErrorAlert, setShowErrorAlert] = useState(false)
     const requestLogin = () => {
-        // console.log('Email: ', Email)
+        const credentials = {
+                'username': email,
+                'password': password
+            };        
+        setLoading(true)
+
+        axios.post('http://127.0.0.1:8001/api/user/login/', credentials)
+            .then(response => {
+                console.log('Recebido', response.data.result)
+            })
+            .catch(error => {                
+                setShowErrorAlert(true)
+            })
+            .finally(() => {
+                setLoading(false)                
+            });
     }
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleInputChange = (e) => {
-        console.log(e.target.value)        
-        // const { name, value } = e.target;
-        // console.log(name.value)
-        // if (name === 'email') {
-        //     setEmail(value);
-        // } else if (name === 'password') {
-        //     setPassword(value);
-        // }
+    const handleInputChange = (e) => {        
+        if (e.target.name === 'email') {
+            setEmail(e.target.value)
+        }
+        else if (e.target.name === 'password') {
+            setPassword(e.target.value)
+        }
     }
 
     return (
@@ -71,6 +86,9 @@ function LoginPage() {
                     label="Password" 
                     id="inputLoginPassword"      
                     type={showPassword ? 'text' : 'password'}
+                    onChange={handleInputChange}
+                    value={password}
+                    name="password"
                     InputProps={{
                         endAdornment: 
                             <InputAdornment position='end'>
@@ -86,24 +104,32 @@ function LoginPage() {
                     }}                          
                 />
                 <Button 
+                    // disabled={true}
                     type='submit' 
                     variant="outlined"
                     onClick={requestLogin}
                 >
                     Login
                 </Button>
-
                 
                 <Button                    
                     disabled={false}
                     size="small"
                     href="/forgot"
                     variant='text'
-                    style={{fontSize: '3pt', color: 'gray'}}
-                    
+                    style={{fontSize: '10pt', color: 'gray'}}                    
                 >
                     Esqueci minha senha
                 </Button>
+
+                {showErrorAlert && (
+                    <Alert 
+                        severity="error" 
+                        onClose={() => setShowErrorAlert(false)}
+                    >
+                        Erro ao fazer login.
+                    </Alert>
+                )}
             </div>
         </div>
     );
