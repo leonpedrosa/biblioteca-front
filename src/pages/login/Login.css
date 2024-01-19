@@ -1,0 +1,14 @@
+.Container {    
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Login {    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;    
+    gap: 27px;
+}
+
