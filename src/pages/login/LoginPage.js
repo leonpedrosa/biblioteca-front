@@ -59,7 +59,7 @@ function LoginPage() {
         axios.post('http://127.0.0.1:8001/api/user/login/', credentials)
             .then(response => {                
                 setToken(response.data.result.token);
-                navigate('/home')
+                navigate('/adminhome')
                 setLoading(false)
             })
             .catch(error => {                
